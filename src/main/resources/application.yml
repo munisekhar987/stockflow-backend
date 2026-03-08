@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: inventory-management
+
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5466/inventory_db}
+    username: ${PGUSER:postgres}
+    password: ${PGPASSWORD:postgres_pass}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: ${HIBERNATE_DDL:update}
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: ${FORMAT_SQL:false}
+    show-sql: ${SHOW_SQL:false}
+
+  flyway:
+    enabled: false
+
+server:
+  port: ${PORT:9598}
+  servlet:
+    context-path: /api
+
+jwt:
+  secret: ${JWT_SECRET:jZXN0LXNlY3JldC1rZXktZm9yLWp3dC10b2tlbi1zaWduaW5nLXB1cnBvc2VzLW9ubHk=}
+  expiration: ${JWT_EXPIRATION:86400000}
+
+cors:
+  allowed:
+    origins: ${CORS_ORIGINS:http://localhost:3000}
+
+logging:
+  level:
+    com.charviots: ${LOG_LEVEL:INFO}
+    org.springframework.security: ${LOG_LEVEL:INFO}
+    org.hibernate.SQL: ${SQL_LOG_LEVEL:INFO}
+    org.hibernate.type.descriptor.sql.BasicBinder: ${SQL_LOG_LEVEL:INFO}
