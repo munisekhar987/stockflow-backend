@@ -7,15 +7,21 @@ spring:
     username: ${PGUSER:postgres}
     password: ${PGPASSWORD:postgres_pass}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:5}        # reduce from default 10
+      minimum-idle: 2
+      idle-timeout: 30000
+      connection-timeout: 20000
+      leak-detection-threshold: 60000             # catch unclosed connections
 
   jpa:
     hibernate:
-      ddl-auto: ${HIBERNATE_DDL:update}
+      ddl-auto: ${HIBERNATE_DDL:validate}         # safer than update in prod
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: ${FORMAT_SQL:false}
-    show-sql: ${SHOW_SQL:false}
+        format_sql: false
+    show-sql: false
 
   flyway:
     enabled: false
@@ -26,7 +32,7 @@ server:
     context-path: /api
 
 jwt:
-  secret: ${JWT_SECRET:jZXN0LXNlY3JldC1rZXktZm9yLWp3dC10b2tlbi1zaWduaW5nLXB1cnBvc2VzLW9ubHk=}
+  secret: ${JWT_SECRET:jZXN0LXNlY3JldC1rZXktZm9yLXp3dC10b2tlbi1zaWduaW5nLXB1cnBvc2VzLW9ubHk=}
   expiration: ${JWT_EXPIRATION:86400000}
 
 cors:
@@ -35,7 +41,10 @@ cors:
 
 logging:
   level:
-    com.charviots: ${LOG_LEVEL:INFO}
-    org.springframework.security: ${LOG_LEVEL:INFO}
-    org.hibernate.SQL: ${SQL_LOG_LEVEL:INFO}
-    org.hibernate.type.descriptor.sql.BasicBinder: ${SQL_LOG_LEVEL:INFO}
+    root: WARN                                    # silence everything by default
+    com.charviots: INFO                           # keep your app logs
+    org.springframework.security: WARN            # only warn, not every auth check
+    org.hibernate.SQL: OFF                        # kill SQL logging
+    org.hibernate.type.descriptor.sql.BasicBinder: OFF   # biggest offender — kill it
+    org.springframework.web.servlet: WARN
+    com.zaxxer.hikari: WARN                       # only log pool problems
