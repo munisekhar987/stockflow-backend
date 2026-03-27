@@ -16,7 +16,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: ${HIBERNATE_DDL:validate}         # safer than update in prod
+      ddl-auto: ${HIBERNATE_DDL:update}         # safer than update in prod
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
