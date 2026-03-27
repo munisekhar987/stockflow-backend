@@ -31,7 +31,7 @@ logging:
   level:
     root: WARN
     com.charviots: INFO
-    org.springframework.security: WARN
+    org.springframework.security: DEBUG
     org.hibernate.SQL: OFF
     org.hibernate.type.descriptor.sql.BasicBinder: OFF
     org.springframework.web.servlet: WARN
