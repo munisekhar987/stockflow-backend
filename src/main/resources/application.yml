@@ -1,50 +1,38 @@
 spring:
   application:
     name: inventory-management
-
   datasource:
     url: ${DATABASE_URL:jdbc:postgresql://localhost:5466/inventory_db}
     username: ${PGUSER:postgres}
     password: ${PGPASSWORD:postgres_pass}
     driver-class-name: org.postgresql.Driver
     hikari:
-      maximum-pool-size: ${DB_POOL_SIZE:5}        # reduce from default 10
+      maximum-pool-size: ${DB_POOL_SIZE:5}
       minimum-idle: 2
       idle-timeout: 30000
       connection-timeout: 20000
-      leak-detection-threshold: 60000             # catch unclosed connections
-
+      leak-detection-threshold: 60000
   jpa:
     hibernate:
-      ddl-auto: ${HIBERNATE_DDL:update}         # safer than update in prod
+      ddl-auto: ${HIBERNATE_DDL:update}
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: false
     show-sql: false
-
   flyway:
     enabled: false
-
 server:
   port: ${PORT:9598}
-  servlet:
-    context-path: /api
-
 jwt:
   secret: ${JWT_SECRET:jZXN0LXNlY3JldC1rZXktZm9yLXp3dC10b2tlbi1zaWduaW5nLXB1cnBvc2VzLW9ubHk=}
   expiration: ${JWT_EXPIRATION:86400000}
-
-cors:
-  allowed:
-    origins: ${CORS_ORIGINS:http://localhost:3000}
-
 logging:
   level:
-    root: WARN                                    # silence everything by default
-    com.charviots: INFO                           # keep your app logs
-    org.springframework.security: WARN            # only warn, not every auth check
-    org.hibernate.SQL: OFF                        # kill SQL logging
-    org.hibernate.type.descriptor.sql.BasicBinder: OFF   # biggest offender — kill it
+    root: WARN
+    com.charviots: INFO
+    org.springframework.security: WARN
+    org.hibernate.SQL: OFF
+    org.hibernate.type.descriptor.sql.BasicBinder: OFF
     org.springframework.web.servlet: WARN
-    com.zaxxer.hikari: WARN                       # only log pool problems
+    com.zaxxer.hikari: WARN
