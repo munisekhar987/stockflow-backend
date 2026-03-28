@@ -25,8 +25,13 @@ public class JwtUtil {
     @Value("${jwt.expiration}")
     private Long expiration;
 
+//    private SecretKey getSigningKey() {
+//        byte[] keyBytes = Decoders.BASE64.decode(secret);
+//        return Keys.hmacShaKeyFor(keyBytes);
+//    }
+
     private SecretKey getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secret);
+        byte[] keyBytes = Decoders.BASE64URL.decode(secret); // ← BASE64URL
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
