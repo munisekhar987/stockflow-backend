@@ -7,6 +7,7 @@ import com.charviots.inventory_backend.entity.User;
 import com.charviots.inventory_backend.repository.StoreRepository;
 import com.charviots.inventory_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class StoreService {
@@ -50,17 +52,27 @@ public class StoreService {
         return toStoreResponse(store);
     }
 
+    @Transactional(readOnly = true)
     public List<StoreResponse> getAllStores() {
         return storeRepository.findAll().stream()
                 .map(this::toStoreResponse)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<StoreResponse> getEnabledStores() {
-        return storeRepository.findAll().stream()
-                .filter(Store::getEnabled)
-                .map(this::toStoreResponse)
-                .collect(Collectors.toList());
+        log.info("Fetching enabled stores");
+        try {
+            List<StoreResponse> stores = storeRepository.findAll().stream()
+                    .filter(Store::getEnabled)
+                    .map(this::toStoreResponse)
+                    .collect(Collectors.toList());
+            log.info("Found {} enabled stores", stores.size());
+            return stores;
+        } catch (Exception e) {
+            log.error("Error fetching enabled stores: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     @Transactional
@@ -98,7 +110,8 @@ public class StoreService {
         Store store = storeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Store not found"));
 
-        if (!store.getUsers().isEmpty()) {
+        List<User> users = store.getUsers();
+        if (users != null && !users.isEmpty()) {
             throw new RuntimeException("Cannot delete store with existing users");
         }
 
@@ -106,13 +119,16 @@ public class StoreService {
     }
 
     private StoreResponse toStoreResponse(Store store) {
+        List<User> users = store.getUsers();
+        int userCount = (users != null) ? users.size() : 0;
+
         return StoreResponse.builder()
                 .id(store.getId())
                 .name(store.getName())
                 .address(store.getAddress())
                 .phone(store.getPhone())
                 .enabled(store.getEnabled())
-                .userCount(store.getUsers() != null ? store.getUsers().size() : 0)
+                .userCount(userCount)
                 .createdAt(store.getCreatedAt())
                 .updatedAt(store.getUpdatedAt())
                 .build();
